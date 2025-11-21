@@ -25,8 +25,9 @@ ImageRGB scaleImageCopy(const ImageRGB& image, const float factor)
     auto result = ImageRGB(image.width, image.height);
     auto num_pixels = image.width * image.height;
 
+    # pragma omp parallel for
     for (auto i = 0; i < num_pixels; i++) {
-        result.data[i] = factor * result.data[i];
+        result.data[i] = factor * image.data[i];
     }
 
     return result;
@@ -44,9 +45,7 @@ void scaleImageInPlace(ImageRGB& image, const float factor)
     auto num_pixels = image.width * image.height;
 
     for (auto i = 0; i < num_pixels; i++) {
-    /*******
-     * TODO: YOUR CODE GOES HERE!!!
-     ******/
+        image.data[i] = image.data[i] * factor;
     }
 }
 
@@ -56,7 +55,6 @@ void scaleImageInPlace(ImageRGB& image, const float factor)
 /// <param name="size">number of tasks</param>
 void doLotOfWork(int size) 
 {
-        
     // Loop over tasks.
     #pragma omp parallel for
     for (auto i = 0; i < size; i++) 
@@ -90,8 +88,9 @@ float getMinimumValue(const std::vector<float>& list)
 float getSum(const std::vector<float>& list)
 {
     float sum = 0.0;
-    /*******
-     * TODO: YOUR CODE GOES HERE!!!
-     ******/
+    # pragma omp parallel for \
+        shared(list) reduction(+: sum)
+    for (int l = 0; l < list.size(); l++)
+        sum += list[l];
     return sum;
 }
